@@ -7,3 +7,10 @@ I will probably ping pong between Python and C# depending on the datastructures
 I need.
 
 Let's see!
+
+# Setup for Python
+
+1. `python -mvenv aoc`
+2. `. aoc/bin/activage.fish`
+3. `pip install --upgrade pip`
+4. `pip install -e .`
