@@ -14,7 +14,7 @@ if __name__ == '__main__':
         l1 = sorted(l1)
         l2 = sorted(l2)
 
-        dist = 0
-        for l,r in zip(l1,l2):
-            dist += abs(l-r)
-        print(dist)
+        similarity = 0
+        for l in l1:
+            similarity += l * l2.count(l)
+        print(similarity)
