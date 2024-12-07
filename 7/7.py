@@ -8,7 +8,7 @@ def is_satisfiable(equation):
     values = equation[1:]
     ops = [add, mul]
 
-    for operator in range(2**len(values)):
+    for operator in range(2**(len(values)-1)):
         accumulator = values[0]
         for i in range(len(values) - 1):
             accumulator = ops[(operator >> i) & 1](accumulator, values[i+1])
