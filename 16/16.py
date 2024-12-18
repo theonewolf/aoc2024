@@ -186,4 +186,5 @@ if __name__ == '__main__':
         print(dijkstra_with_turns(maze, start, end))
         cost, paths = dijkstra_with_turns_all_paths(maze, start, end)
         print(cost)
-        print(len(set([step for path in paths for step in path])))
+        print(set([step for path in paths for step in path]))
+        print(len(set([step for path in paths for step in path])) + 1 + 1)
