@@ -33,7 +33,7 @@ def dijkstra(grid):
                     heapq.heappush(pq, (new_cost, (nx, ny)))
 
     # If the goal is unreachable
-    return -1
+    return None
 
 def grid_str(grid):
     return '\n'.join([''.join(row) for row in grid])
@@ -52,8 +52,8 @@ if __name__ == '__main__':
         for x,y in bytestack:
             grid[y][x] = '#'
             count += 1
-            if count >= 1024: break
-
-        print(grid_str(grid))
-        print(bytestack)
-        print(dijkstra(grid))
+            print(count)
+            if not dijkstra(grid):
+                print(f'First byte corruption cutting off exit: {x},{y}')
+                print(grid_str(grid))
+                break
