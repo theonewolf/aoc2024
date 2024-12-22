@@ -27,66 +27,59 @@ def get_price(secret):
 # most bananas overall. Each buyer is going to generate 2000 secret numbers
 # after their initial secret number, so, for each buyer, you'll have 2000 price
 # changes in which your sequence can occur.
-def sliding_subsequences(sequence, total, subsequences=dict()):
+
+# If we have a dict, we can compute price as we go through all sequences...
+# We don't need a multipass algorithm; track all prices, then pick the max
+def sliding_subsequences(sequence, prices, subsequences=dict()):
+    seen = set()
     for i in range(len(sequence)):
-        if(len(sequence[i:i+4]) != 4): continue
-        if tuple(sequence[i:i+4]) not in subsequences:
-            subsequences[tuple(sequence[i:i+4])] = [[] for _ in range(total)]
-    return subsequences
+        subseq = None
+        try:
+            subseq = tuple(sequence[i:i+4])
+        except:
+            continue
 
-def best_price(seqid, subsequences, sequence, subsequence, prices):
-    max_price = 0
+        price = None
+        try:
+            price = prices[i+3]
+        except:
+            continue
 
-    for location in subsequences[subsequence][seqid]:
-        if prices[location+4] > max_price:
-            max_price = prices[location+4]
+        if subseq in seen: continue
 
-    return max_price
-
-def index(sequences, subsequences):
-    for subseq in subsequences:
-        for seqid, seq in enumerate(sequences):
-            for i in range(len(seq)):
-                if(len(seq[i:i+4]) != 4): continue
-                subsequences[tuple(seq[i:i+4])][seqid].append(i)
+        if subseq not in subsequences:
+            subsequences[subseq] = price
+            seen.add(subseq)
+        else:
+            subsequences[subseq] += price
+            seen.add(subseq)
 
 def search(prices, diffs):
-    max_price = float('-inf')
-    best_subsequence = []
-
     subsequences = dict()
 
-    for seq in diffs:
-        sliding_subsequences(seq, len(diffs), subsequences)
+    for price, seq in zip(prices, diffs):
+        sliding_subsequences(seq, price, subsequences)
 
-    index(diffs, subsequences)
+    max_price = max(subsequences.values())
+    best_subsequences = [key for key, value in subsequences.items() if value == max_price]
 
-    for subseq in subsequences:
-        max_prices = []
-        for seqid, (seq, pricelist) in enumerate(zip(diffs, prices)):
-            max_prices.append(best_price(seqid, subsequences, seq, subseq, pricelist))
-        if sum(max_prices) > max_price:
-            best_subsequence = subseq
-            max_price = sum(max_prices)
-
-    return max_price, best_subsequence
+    return max_price, best_subsequences
 
 if __name__ == '__main__':
     with open('input') as fd:
         secret_numbers = [int(line) for line in fd]
         prices = []
         diffs = []
-        print(secret_numbers)
 
         for secret in secret_numbers:
             secret_log = [secret]
 
-            for _ in range(1999):
+            for _ in range(2000):
                 secret_log.append(compute_secret_hash(secret, 1))
                 secret = secret_log[-1]
 
             prices.append([get_price(secret) for secret in secret_log])
-            diffs.append([b - a for a,b in zip(prices[-1], prices[-1][1:])])
+            diffs.append([None] + [b - a for a,b in zip(prices[-1], prices[-1][1:])])
 
         max_price, best_subsequence = search(prices, diffs)
 
