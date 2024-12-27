@@ -3,17 +3,14 @@
 from collections import defaultdict
 from itertools import combinations
 
-def find_cliques(graph):
-    cliques_of_size_3 = set()
+import networkx as nx
 
-    nodes = sorted(graph.keys())
+def find_cliques2(graph):
+    G = nx.Graph()
+    G.add_edges_from([(k, n) for k,v in graph.items() for n in v])
 
-    for triple in combinations(nodes, 3):
-        if triple[0] in graph[triple[1]] and triple[0] in graph[triple[2]] and \
-           triple[1] in graph[triple[2]]:
-            cliques_of_size_3.add(tuple(sorted(triple)))
-
-    return cliques_of_size_3
+    cliques = nx.find_cliques(G)
+    return max(cliques, key=len)
 
 if __name__ == '__main__':
     with open('input') as fd:
@@ -25,8 +22,6 @@ if __name__ == '__main__':
             connections[a].add(b)
             connections[b].add(a)
 
-        cliques = find_cliques(connections)
+        maxclique = find_cliques2(connections)
 
-        print([c for c in cliques if len(c) == 3])
-        print({tuple(c) for c in cliques if len(c) == 3 and any(n.startswith('t') for n in c)})
-        print(len({tuple(c) for c in cliques if len(c) == 3 and any(n.startswith('t') for n in c)}))
+        print(','.join(sorted(maxclique)))
